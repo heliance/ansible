@@ -1,0 +1,58 @@
+---
+  - name: "Updating SP Build on Portals."
+    hosts: portal_db
+    become_user: admin
+
+    vars:
+      source_file: "{{ item }}"
+      destin_file: /home/admin
+
+
+    tasks:
+
+    - name: "Copying actual build to recipient's ~."
+      copy:
+        src={{ source_file }}
+        dest={{ destin_file }}
+        mode=0555
+      with_fileglob: "/mnt/e/Software/SP_Builds/2Ansible/*"
+      register: rpms_copied
+
+#    - name: "Debugging."
+#     debug:
+#        var: rpms_copied
+     
+
+    - name: "Installing ServicePattern Core + Web packages on Portals."
+      yum:
+        name:
+          - "{{ rpms_copied.results[0].dest }}"
+          - "{{ rpms_copied.results[1].dest }}"
+        state: present
+
+  - name: "Updating SP Build on Config."
+    hosts: config
+    become_user: admin
+
+    vars:
+      source_file: "{{ item }}"
+      destin_file: /home/admin
+
+    tasks:
+
+    - name: "Copying actual build to recipient's ~."
+      copy:
+        src={{ source_file }}
+        dest={{ destin_file }}
+        mode=0555
+      with_fileglob: "/mnt/e/Software/SP_Builds/2Ansible/servicepattern-core*"
+      register: core_copied
+
+    - name: "Installing ServicePattern Core package on Config."
+      yum:
+        name:
+          - "{{ core_copied.results[0].dest }}"
+        state: present      
+  
+
+
