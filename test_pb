@@ -1,0 +1,13 @@
+---
+   - name: "Restarting all BP services on all hosts."
+     hosts: all
+#     remote_user: admin
+     become: yes
+
+     tasks:
+
+     - name: "Restarting..."
+       command: bash /usr/lib/servicepattern/setup/sp_servers.sh restart
+       register: output
+     - debug:
+         var=output.stdout_lines
