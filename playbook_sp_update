@@ -62,9 +62,9 @@
 
     - name: "Running..."
       command: /usr/lib/servicepattern/setup/dbUpdate.sh
-      register: output
+      register: output_u
     - debug:
-        var=output.stdout_lines
+        var=output_u.stdout_lines
 
   - name: "Restarting all BP services on all hosts."
     hosts: all
@@ -74,5 +74,6 @@
 
     - name: "Restarting..."
       command: bash /usr/lib/servicepattern/setup/sp_servers.sh restart
+      register: output_r
     - debug:
-        var=output.stdout_lines
+        var=output_r.stdout_lines
