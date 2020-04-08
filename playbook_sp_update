@@ -1,7 +1,7 @@
 ---
   - name: "Updating SP Build on Portals."
     hosts: portal_db
-    become_user: admin
+    become: yes
 
     vars:
       source_file: "{{ item }}"
@@ -32,7 +32,7 @@
 
   - name: "Updating SP Build on Config."
     hosts: config
-    become_user: admin
+    become: yes
 
     vars:
       source_file: "{{ item }}"
@@ -53,6 +53,26 @@
         name:
           - "{{ core_copied.results[0].dest }}"
         state: present      
-  
 
+  - name: "Perfroming dbUpdate.sh script on MasterSQL instance."
+    hosts: portal_db
+    become: yes
 
+    tasks:
+
+    - name: "Running..."
+      command: /usr/lib/servicepattern/setup/dbUpdate.sh
+      register: output
+    - debug:
+        var=output.stdout_lines
+
+  - name: "Restarting all BP services on all hosts."
+    hosts: all
+    become: yes
+
+    tasks:
+
+    - name: "Restarting..."
+      command: bash /usr/lib/servicepattern/setup/sp_servers.sh restart
+    - debug:
+        var=output.stdout_lines

@@ -1,3 +1,4 @@
 ---
 ansible_ssh_user        :       admin
 ansible_ssh_pass        :       LasVegas2020
+ansible_become_pass     :       LasVegas2020
