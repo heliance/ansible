@@ -77,3 +77,31 @@
       register: output_r
     - debug:
         var=output_r.stdout_lines
+
+  - name: "Cleaning up copied files."
+    hosts: portal_db
+    become: yes
+    vars:
+      source_file: "{{ item }}"
+      destin_file: /home/admin
+    
+    tasks:
+
+    - name: "Executing..."
+      find:
+        paths: "{{ destin_file }}"
+        patterns: servicepattern-*
+      register: files_to_delete
+
+    - name:
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ files_to_delete.files[0].path }}"
+        - "{{ files_to_delete.files[1].path }}"
+
+#    tasks:
+#
+#    - name: "Cleaning up copied rpms..."
+#      command: rm 
